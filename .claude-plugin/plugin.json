@@ -1,0 +1,25 @@
+{
+  "name": "facsimile",
+  "displayName": "Facsimile",
+  "version": "0.1.0",
+  "description": "Pixel-accurate replicas from screenshots and icons: rebuild UI screens as HTML/CSS and logos or mascots as clean SVG, measured from the reference and verified by render-and-diff.",
+  "author": {
+    "name": "Nour Shobier",
+    "url": "https://github.com/NourEldinShobier"
+  },
+  "homepage": "https://github.com/NourEldinShobier/facsimile",
+  "repository": "https://github.com/NourEldinShobier/facsimile",
+  "license": "MIT",
+  "keywords": [
+    "design-to-code",
+    "screenshot",
+    "pixel-perfect",
+    "svg",
+    "vectorize",
+    "html",
+    "css",
+    "playwright",
+    "visual-diff"
+  ],
+  "icon": "./assets/icon.png"
+}
