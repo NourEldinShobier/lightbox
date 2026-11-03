@@ -8,29 +8,29 @@ argument-hint: "[screenshot or folder] [notes]"
 
 The goal is a replica a viewer can't tell from the screenshot at a glance, proven by numbers, not by eye. Never guess a colour, size or shadow: measure it from the reference, build, render, diff, fix, repeat.
 
-All tools are the `facsimile` CLI, which this plugin puts on the Bash tool's PATH (on Windows PowerShell/cmd use `facsimile.cmd`). Run `facsimile <command> -h` for options.
+All tools are the `lightbox` CLI, which this plugin puts on the Bash tool's PATH (on Windows PowerShell/cmd use `lightbox.cmd`). Run `lightbox <command> -h` for options.
 
 ## 0. Check the toolchain
 
-Run `facsimile doctor`. If it reports anything missing, run `facsimile setup` (pip-installs Pillow, NumPy, OpenCV, potracer, Playwright and, only if no Chrome/Edge is installed, Playwright's Chromium). If several Pythons exist, set `FACSIMILE_PYTHON` to the one that has the packages.
+Run `lightbox doctor`. If it reports anything missing, run `lightbox setup` (pip-installs Pillow, NumPy, OpenCV, potracer, Playwright and, only if no Chrome/Edge is installed, Playwright's Chromium). If several Pythons exist, set `LIGHTBOX_PYTHON` to the one that has the packages.
 
 ## 1. Pin down the reference
 
 - Read the image. Note its pixel size and guess the device pixel ratio: menu-bar text ~28px tall means a 2x retina capture. The stage in CSS px = image px / DPR. Render at `--scale DPR` so the comparison is pixel to pixel.
-- A sheet with several items: `facsimile tiles sheet.png --out refs/` crops each object with padding (its drop shadow included).
-- A folder of references: `facsimile images DIR` lists formats, sizes and duplicates (identical files are listed as `DUPLICATE of`); `--fix-ext refs/` copies extensionless downloads to proper `.jpg/.png` names, which browsers and the gallery need.
+- A sheet with several items: `lightbox tiles sheet.png --out refs/` crops each object with padding (its drop shadow included).
+- A folder of references: `lightbox images DIR` lists formats, sizes and duplicates (identical files are listed as `DUPLICATE of`); `--fix-ext refs/` copies extensionless downloads to proper `.jpg/.png` names, which browsers and the gallery need.
 
 ## 2. Measure before writing CSS
 
 Work from numbers. Typical calls:
 
 ```bash
-facsimile zoom ref.png z.png --box 290 130 400 260 --scale 6     # look at corners, strokes, icons
-facsimile sample ref.png 200,215 375,300 335,186                    # exact fills
-facsimile sample ref.png --row 350 360 392                          # profile across a right edge
-facsimile sample ref.png --col 200 140 160                          # profile across a top edge
-facsimile sample ref.png --avg 10 300 120 400                       # region average (gradients: sample several)
-facsimile extent ref.png --select "L>200" --box 60 160 300 210 --join 6   # text runs and buttons: boxes and colours
+lightbox zoom ref.png z.png --box 290 130 400 260 --scale 6     # look at corners, strokes, icons
+lightbox sample ref.png 200,215 375,300 335,186                    # exact fills
+lightbox sample ref.png --row 350 360 392                          # profile across a right edge
+lightbox sample ref.png --col 200 140 160                          # profile across a top edge
+lightbox sample ref.png --avg 10 300 120 400                       # region average (gradients: sample several)
+lightbox extent ref.png --select "L>200" --box 60 160 300 210 --join 6   # text runs and buttons: boxes and colours
 ```
 
 Quote mask specs (`"L>200"`, `"#4cc2ff~20"`): unquoted `<`, `>` and `#` are shell syntax.
@@ -58,10 +58,10 @@ Sample the darkening ratio just outside the edge (`edge = render/background`) an
 ## 4. Verify loop (at least 3 rounds per screen)
 
 ```bash
-facsimile render page.html out.png --size 259x306 --scale 2          # html query: --query dark
-facsimile diff out.png ref.png --out cmp                             # score + worst regions + cmp_side.png
-facsimile diff out.png ref.png --box 0 140 386 612                   # score one region
-facsimile sample ref.png 387,450 438,450 --vs out.png                # compare surfaces point by point
+lightbox render page.html out.png --size 259x306 --scale 2          # html query: --query dark
+lightbox diff out.png ref.png --out cmp                             # score + worst regions + cmp_side.png
+lightbox diff out.png ref.png --box 0 140 386 612                   # score one region
+lightbox sample ref.png 387,450 438,450 --vs out.png                # compare surfaces point by point
 ```
 
 `diff` prints `mean_abs_diff` (0-255; under ~3 is very close for a flat UI, photographic backgrounds score higher), the worst 32px cells with the reference vs render average colour in each, and writes `<prefix>_side.png` (reference | render) and an amplified `<prefix>_diff.png`. Each round: look at the side-by-side, fix the worst cells (shape/position first, then fills, then strokes, then shadows and highlights), re-render, keep only changes that lower the error. Target every surface within ~3 per RGB channel of the reference where the structure allows, and keep going while any surface misses by more than 6.
@@ -74,7 +74,7 @@ A focused second pass on an existing replica: inventory every surface (list abov
 
 ## 6. Many screenshots (batch)
 
-For a folder of screenshots, run the `replicate-screens` workflow (`/facsimile:replicate-screens`) when workflows are available, or fan out with the Agent tool yourself: groups of 3-4 screenshots per agent (`facsimile:screen-replicator`), in parallel.
+For a folder of screenshots, run the `replicate-screens` workflow (`/lightbox:replicate-screens`) when workflows are available, or fan out with the Agent tool yourself: groups of 3-4 screenshots per agent (`lightbox:screen-replicator`), in parallel.
 
 Contract for each agent's output so the pieces combine:
 
@@ -92,7 +92,7 @@ Contract for each agent's output so the pieces combine:
 Combine with each original beside its replica:
 
 ```bash
-facsimile gallery --parts parts --refs refs.json --out replicas.html --title "Windows 11"
+lightbox gallery --parts parts --refs refs.json --out replicas.html --title "Windows 11"
 ```
 
 `refs.json` maps figure id to the reference image path, relative to the JSON file: `{"A1": "shots/start-menu.png"}`. For standalone files use `--pair replica.html ref.png "label"` (repeatable). Then render the gallery or open it and check that every reference image loads: lazy images report `naturalWidth` 0 until scrolled into view, and paths with spaces must be URL-encoded (the gallery does this).

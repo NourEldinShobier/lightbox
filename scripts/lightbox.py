@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""facsimile: measure, render and compare tools for pixel-accurate UI and icon replicas.
+"""lightbox: measure, render and compare tools for pixel-accurate UI and icon replicas.
 
-Run `facsimile <command> -h` for each command's options.
+Run `lightbox <command> -h` for each command's options.
 """
 import argparse
 import hashlib
@@ -21,7 +21,7 @@ IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 
 
 def die(msg, code=1):
-    print(f"facsimile: {msg}", file=sys.stderr)
+    print(f"lightbox: {msg}", file=sys.stderr)
     sys.exit(code)
 
 
@@ -29,7 +29,7 @@ def need(module, pip_name=None):
     try:
         return __import__(module)
     except ImportError:
-        die(f"missing Python package '{pip_name or module}'. Run `facsimile setup` (or pip install -r requirements.txt).")
+        die(f"missing Python package '{pip_name or module}'. Run `lightbox setup` (or pip install -r requirements.txt).")
 
 
 # ---------------------------------------------------------------- image helpers
@@ -136,7 +136,7 @@ def launch_browser(p):
             return (p.chromium.launch(channel=channel) if channel else p.chromium.launch()), channel or "chromium"
         except Exception as e:  # noqa: BLE001 - try the next browser
             errors.append(f"{channel or 'chromium'}: {str(e).splitlines()[0]}")
-    die("no browser available for Playwright. Run `facsimile setup`.\n  " + "\n  ".join(errors))
+    die("no browser available for Playwright. Run `lightbox setup`.\n  " + "\n  ".join(errors))
 
 
 def cmd_render(a):
@@ -743,7 +743,7 @@ def cmd_doctor(a):
     used = probe_browser() if probe_modules()["playwright"] else None
     print(f"  {'ok     ' if used else 'MISSING'} browser for rendering{f' ({used})' if used else ''}")
     ok &= bool(used)
-    print("ready" if ok else "not ready: run `facsimile setup`")
+    print("ready" if ok else "not ready: run `lightbox setup`")
     sys.exit(0 if ok else 1)
 
 
@@ -758,7 +758,7 @@ def cmd_setup(a):
         print("$ " + " ".join(cmd))
         if subprocess.call(cmd):
             die("playwright browser install failed")
-    print("setup done; run `facsimile doctor` to confirm")
+    print("setup done; run `lightbox doctor` to confirm")
 
 
 def cmd_selftest(a):
@@ -842,7 +842,7 @@ def cmd_selftest(a):
 # ---------------------------------------------------------------- CLI
 
 def main():
-    ap = argparse.ArgumentParser(prog="facsimile", description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(prog="lightbox", description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("render", help="screenshot an HTML/SVG/image file at an exact viewport size")

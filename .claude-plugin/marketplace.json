@@ -1,13 +1,13 @@
 {
-  "name": "facsimile",
-  "description": "Facsimile: pixel-accurate UI and icon replicas for Claude Code",
+  "name": "lightbox",
+  "description": "Lightbox: pixel-accurate UI and icon replicas for Claude Code",
   "owner": {
     "name": "Nour Shobier",
     "url": "https://github.com/NourEldinShobier"
   },
   "plugins": [
     {
-      "name": "facsimile",
+      "name": "lightbox",
       "source": "./",
       "description": "Pixel-accurate replicas from screenshots and icons: UI screens as HTML/CSS, logos and mascots as clean SVG, verified by render-and-diff."
     }

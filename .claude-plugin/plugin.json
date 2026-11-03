@@ -1,14 +1,14 @@
 {
-  "name": "facsimile",
-  "displayName": "Facsimile",
+  "name": "lightbox",
+  "displayName": "Lightbox",
   "version": "0.1.0",
   "description": "Pixel-accurate replicas from screenshots and icons: rebuild UI screens as HTML/CSS and logos or mascots as clean SVG, measured from the reference and verified by render-and-diff.",
   "author": {
     "name": "Nour Shobier",
     "url": "https://github.com/NourEldinShobier"
   },
-  "homepage": "https://github.com/NourEldinShobier/facsimile",
-  "repository": "https://github.com/NourEldinShobier/facsimile",
+  "homepage": "https://github.com/NourEldinShobier/lightbox",
+  "repository": "https://github.com/NourEldinShobier/lightbox",
   "license": "MIT",
   "keywords": [
     "design-to-code",

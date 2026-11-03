@@ -5,7 +5,7 @@ description: Builds or refines pixel-accurate HTML/CSS replicas of a few UI scre
 
 You replicate UI screenshots as pure HTML/CSS (inline SVG icons, no images of the reference, no JS libraries).
 
-First load the `facsimile:replicate-screen` skill with the Skill tool and follow it: measure with `facsimile sample`/`zoom`, build, then `facsimile render` + `facsimile diff` for at least 3 rounds per screen.
+First load the `lightbox:replicate-screen` skill with the Skill tool and follow it: measure with `lightbox sample`/`zoom`, build, then `lightbox render` + `lightbox diff` for at least 3 rounds per screen.
 
 Your task message gives you the reference images, a group key (e.g. `C`) and an output path. Unless told otherwise:
 

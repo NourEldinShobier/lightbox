@@ -8,17 +8,17 @@ argument-hint: "[image] [which icon, e.g. 'bottom right']"
 
 Deliver an SVG that matches the reference closely and is a real vector: a few dozen named shapes (tile, shadow, body, eyes, highlights...), smooth curves, gradients and filters. Never embed the raster (`<image>`, data URIs) and never deliver a mosaic of thousands of tiny traced paths.
 
-Tools are the `facsimile` CLI (on the Bash tool's PATH via this plugin; `facsimile.cmd` on Windows shells). Run `facsimile doctor` first and `facsimile setup` if anything is missing.
+Tools are the `lightbox` CLI (on the Bash tool's PATH via this plugin; `lightbox.cmd` on Windows shells). Run `lightbox doctor` first and `lightbox setup` if anything is missing.
 
 If the user wants the result in Figma: build the SVG here (vectors are easier to measure and verify in code), then import it (drag the `.svg` into Figma, or use a Figma MCP upload when connected). The paths stay editable.
 
 ## 1. Crop the target
 
-`facsimile tiles sheet.png --out ref/` finds each icon on a sheet (row-major numbering, padded so the drop shadow is included) and writes `tiles.json`. Pick the one the user means ("bottom right" = last item of the last row). Keep the crop's page colour: sample a corner, it is the `--bg` for renders.
+`lightbox tiles sheet.png --out ref/` finds each icon on a sheet (row-major numbering, padded so the drop shadow is included) and writes `tiles.json`. Pick the one the user means ("bottom right" = last item of the last row). Keep the crop's page colour: sample a corner, it is the `--bg` for renders.
 
 ## 2. Decompose and measure
 
-List every visible part and its paint: tile (rounded square with gradient), tile drop shadow, body silhouette, secondary shapes (hat, tuft, hand, door, slope), small details (badge, keyhole, pupils, eye whites, alert dashes), rim lights, glows, inner shading. Measure with `facsimile zoom`, `facsimile sample` (points, `--row`/`--col` profiles across edges, `--avg` regions) and `facsimile extent --select SPEC` (bounding boxes of e.g. the eyes, to place ellipses).
+List every visible part and its paint: tile (rounded square with gradient), tile drop shadow, body silhouette, secondary shapes (hat, tuft, hand, door, slope), small details (badge, keyhole, pupils, eye whites, alert dashes), rim lights, glows, inner shading. Measure with `lightbox zoom`, `lightbox sample` (points, `--row`/`--col` profiles across edges, `--avg` regions) and `lightbox extent --select SPEC` (bounding boxes of e.g. the eyes, to place ellipses).
 
 ## 3. Build each shape, simplest construction first
 
@@ -26,9 +26,9 @@ List every visible part and its paint: tile (rounded square with gradient), tile
 2. **Smoothed trace** for organic silhouettes (blobs, hands, hats):
 
    ```bash
-   facsimile trace ref.png --select "L<60" --keep 1 --fill-holes --out blob.path      # dark body, holes filled
-   facsimile trace ref.png --select "#e8e9ef~30" --box 300 230 390 340 --keep 1        # a light part inside a box
-   facsimile smooth blob.path                                                           # check every trace at once
+   lightbox trace ref.png --select "L<60" --keep 1 --fill-holes --out blob.path      # dark body, holes filled
+   lightbox trace ref.png --select "#e8e9ef~30" --box 300 230 390 340 --keep 1        # a light part inside a box
+   lightbox smooth blob.path                                                           # check every trace at once
    ```
 
    `trace` upscales the mask 4x, blurs it (`--blur 1.5` default), re-thresholds and fits potrace curves, so stair steps become curves. If `trace` or `smooth` reports STAIR-STEPPED, raise `--blur` (2-2.5); lower it to keep sharper corners. Concave notches (where a head meets a slot, a fist's knuckles) stay real corners. Fewer, longer cubics read cleaner than many short ones; edit the result if needed.
@@ -50,13 +50,13 @@ List every visible part and its paint: tile (rounded square with gradient), tile
 ## 5. Verify (every round)
 
 ```bash
-facsimile render icon.svg out.png --size 440x480 --bg "#fdfdfd"
-facsimile diff out.png ref/icon.png --out cmp                 # score, worst cells, cmp_side.png
-facsimile iou out.png ref/icon.png --mask "dark:L<60" --min 0.97 --out iou
-facsimile iou out.png ref/icon.png --mask "eyes:L>235" --box 150 200 330 320 --min 0.97   # box it: white masks also match a light page
-facsimile smooth icon.svg                                     # exit 1 = stair-stepped paths or embedded rasters
-facsimile render icon.svg big.png --size 440x480 --bg "#fdfdfd" --scale 4
-facsimile zoom big.png key.png --box 1280 920 1560 1360 --scale 1   # inspect each small element at 4x
+lightbox render icon.svg out.png --size 440x480 --bg "#fdfdfd"
+lightbox diff out.png ref/icon.png --out cmp                 # score, worst cells, cmp_side.png
+lightbox iou out.png ref/icon.png --mask "dark:L<60" --min 0.97 --out iou
+lightbox iou out.png ref/icon.png --mask "eyes:L>235" --box 150 200 330 320 --min 0.97   # box it: white masks also match a light page
+lightbox smooth icon.svg                                     # exit 1 = stair-stepped paths or embedded rasters
+lightbox render icon.svg big.png --size 440x480 --bg "#fdfdfd" --scale 4
+lightbox zoom big.png key.png --box 1280 920 1560 1360 --scale 1   # inspect each small element at 4x
 ```
 
 - `diff`: whole crop and tile-only box. Good replicas reach ~1.5-2.5 mean_abs_diff.
@@ -67,9 +67,9 @@ At least 5 rounds: outlines first, then fills/gradients, then shading, shadows a
 
 ## 6. Refinement pass with fresh eyes
 
-When quality matters, give the finished SVG to a second agent (`facsimile:icon-vectorizer` in refine mode, or the `vectorize-icons` workflow, which does build -> refine automatically). It measures first instead of trusting the builder's report, lists the 5 largest error regions with the element in each, fixes them, and keeps only changes that lower the error.
+When quality matters, give the finished SVG to a second agent (`lightbox:icon-vectorizer` in refine mode, or the `vectorize-icons` workflow, which does build -> refine automatically). It measures first instead of trusting the builder's report, lists the 5 largest error regions with the element in each, fixes them, and keeps only changes that lower the error.
 
 ## 7. Deliver
 
-- `name.svg` per icon, plus a comparison page: `facsimile gallery --pair name.svg ref/name.png "Name" --out index.html` (repeat `--pair`).
+- `name.svg` per icon, plus a comparison page: `lightbox gallery --pair name.svg ref/name.png "Name" --out index.html` (repeat `--pair`).
 - Report: score, IoUs, that `smooth` passes, and the largest remaining mismatch (usually soft shading). Mention construction choices the user may want changed (symmetry, merged layers, renamed ids).

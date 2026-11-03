@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Runs the facsimile CLI. Picks $FACSIMILE_PYTHON if set, else the first Python 3.9+ on PATH that
-# already has the dependencies, else the first Python 3.9+ (so `facsimile setup` installs into it).
+# Runs the lightbox CLI. Picks $LIGHTBOX_PYTHON if set, else the first Python 3.9+ on PATH that
+# already has the dependencies, else the first Python 3.9+ (so `lightbox setup` installs into it).
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-script="$here/scripts/facsimile.py"
-if [ -n "$FACSIMILE_PYTHON" ]; then exec "$FACSIMILE_PYTHON" "$script" "$@"; fi
+script="$here/scripts/lightbox.py"
+if [ -n "$LIGHTBOX_PYTHON" ]; then exec "$LIGHTBOX_PYTHON" "$script" "$@"; fi
 first=""
 for py in python3 python py; do
   command -v "$py" >/dev/null 2>&1 || continue
@@ -12,5 +12,5 @@ for py in python3 python py; do
   if "$py" -c 'import PIL, numpy, cv2, potrace, playwright' >/dev/null 2>&1; then exec "$py" "$script" "$@"; fi
 done
 [ -n "$first" ] && exec "$first" "$script" "$@"
-echo "facsimile: Python 3.9+ not found on PATH (or set FACSIMILE_PYTHON)" >&2
+echo "lightbox: Python 3.9+ not found on PATH (or set LIGHTBOX_PYTHON)" >&2
 exit 127
