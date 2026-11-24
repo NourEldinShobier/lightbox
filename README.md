@@ -87,3 +87,11 @@ requirements.txt
 ## License
 
 MIT
+
+## OpenCode
+
+This repository is also an OpenCode 2 plugin: the same `skills/` folder is registered through `opencode/index.mjs`.
+
+```sh
+opencode plugin add github:NourEldinShobier/lightbox
+```
